@@ -1,25 +1,30 @@
 var esprima = require("esprima");
 var options = {tokens:true, tolerant: true, loc: true, range: true };
 var fs = require("fs");
+var glob = require('glob');
 
 function main()
 {
-	var args = process.argv.slice(2);
-
-	if( args.length == 0 )
-	{
-		args = ["analysis.js"];
-	}
-	var filePath = args[0];
 	
-	complexity(filePath);
-
-	// Report
-	for( var node in builders )
-	{
-		var builder = builders[node];
-		builder.report();
-	}
+   glob( '/home/ubuntu/checkbox.io/server-side/site/*.js', function( err, files ) {
+      console.log( files );
+   });
+   // var args = process.argv.slice(2);
+   //
+	// if( args.length == 0 )
+	// {
+	// 	args = ["analysis.js"];
+	// }
+	// var filePath = args[0];
+	//
+	// complexity(filePath);
+   //
+	// // Report
+	// for( var node in builders )
+	// {
+	// 	var builder = builders[node];
+	// 	builder.report();
+	// }
 
 }
 

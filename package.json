@@ -19,5 +19,8 @@
   "devDependencies": {
     "escodegen": "^1.4.1",
     "esprima": "^1.2.2"
+  },
+  "dependencies": {
+    "glob": "^7.1.1"
   }
 }
