@@ -39,7 +39,7 @@ function ComplexityBuilder()
 	this.report = function()
 	{
       if(this.MaxConditions >=8 || this.numOfLines >=100 || this.MaxNestingDepth >=3){
-	
+         
          console.log(
             (
                "{0}(): {1}\n" +
@@ -51,6 +51,7 @@ function ComplexityBuilder()
             .format(this.FunctionName, this.StartLine,
                      this.MaxConditions, this.numOfLines, this.MaxNestingDepth)
          );
+         throw new Error("Build fail");	
       }
 	}
 };
