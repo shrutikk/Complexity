@@ -8,7 +8,7 @@ var fileBuilders = {};
 function main()
 {
 	
-   glob( '/home/shruti/DevOps/Project/checkbox.io/server-side/site/**/*.js', function( err, files ) {
+   glob( '/home/ubuntu/checkbox.io/server-side/site/**/*.js', function( err, files ) {
       console.log(files);     
       files.forEach(function(file,index){
          fileBuilders[file] = {};
