@@ -3,62 +3,55 @@ var options = {tokens:true, tolerant: true, loc: true, range: true };
 var fs = require("fs");
 var glob = require('glob');
 
+var fileBuilders = {};
+
 function main()
 {
 	
-   glob( '/home/ubuntu/checkbox.io/server-side/site/*.js', function( err, files ) {
-      console.log( files );
+   glob( '/home/shruti/DevOps/Project/checkbox.io/server-side/site/**/*.js', function( err, files ) {
+      console.log(files);     
+      files.forEach(function(file,index){
+         fileBuilders[file] = {};
+         fileBuilders[file].builders = [];
+         complexity(file);
+         for( var node in fileBuilders[file].builders )
+         {
+            fileBuilders[file].builders[node].report();
+         }
+      });
    });
-   // var args = process.argv.slice(2);
-   //
-	// if( args.length == 0 )
-	// {
-	// 	args = ["analysis.js"];
-	// }
-	// var filePath = args[0];
-	//
-	// complexity(filePath);
-   //
-	// // Report
-	// for( var node in builders )
-	// {
-	// 	var builder = builders[node];
-	// 	builder.report();
-	// }
 
 }
 
-var builders = {};
 
-// Represent a reusable "class" following the Builder pattern.
 function ComplexityBuilder()
 {
 	this.StartLine = 0;
+   this.EndLine = 0;
+   this.numOfLines = 0;
 	this.FunctionName = "";
-	// The number of parameters for functions
 	this.ParameterCount  = 0,
-	// Number of if statements/loops + 1
 	this.SimpleCyclomaticComplexity = 0;
-	// The max depth of scopes (nested ifs, loops, etc)
 	this.MaxNestingDepth    = 0;
-	// The max number of conditions if one decision statement.
 	this.MaxConditions      = 0;
+   this.fileName = "";
 
 	this.report = function()
 	{
-		console.log(
-		   (
-		   	"{0}(): {1}\n" +
-		   	"============\n" +
-			   "SimpleCyclomaticComplexity: {2}\t" +
-				"MaxNestingDepth: {3}\t" +
-				"MaxConditions: {4}\t" +
-				"Parameters: {5}\n\n"
-			)
-			.format(this.FunctionName, this.StartLine,
-				     this.SimpleCyclomaticComplexity, this.MaxNestingDepth,
-			        this.MaxConditions, this.ParameterCount)
-		);
+      if(this.MaxConditions >=8 || this.numOfLines >=100 || this.MaxNestingDepth >=3){
+	
+         console.log(
+            (
+               "{0}(): {1}\n" +
+               "============\n" +
+               "MaxConditions: {2}\t" +
+               "Number of Lines: {3}\t"+
+               "Max Nesting: {4} \t Status:Failure\n\n"
+            )
+            .format(this.FunctionName, this.StartLine,
+                     this.MaxConditions, this.numOfLines, this.MaxNestingDepth)
+         );
+      }
 	}
 };
 
@@ -124,17 +117,55 @@ function complexity(filePath)
 	var ast = esprima.parse(buf, options);
 
 	var i = 0;
+   console.log(filePath+'******************\n');
 	// Tranverse program with a function visitor.
 	traverseWithParents(ast, function (node) 
 	{
-		if (node.type === 'FunctionDeclaration') 
+		if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') 
 		{
+         // console.log(node.loc.start.line +' '+node.loc.end.line+'*************');
 			var builder = new ComplexityBuilder();
-
+         builder.fileName = filePath;
 			builder.FunctionName = functionName(node);
 			builder.StartLine    = node.loc.start.line;
+         builder.EndLine = node.loc.end.line;
+         builder.numOfLines = builder.EndLine - builder.StartLine;
+     		// fileBuilders[filePath].builders[builder.FunctionName] = builder;
+         
+         var conditions = 0,maxConditions = 0,nesting = 0, maxNesting = 0;
 
-			builders[builder.FunctionName] = builder;
+         traverseWithParents(node, function(node){
+            if(node.type === 'IfStatement'){
+               // find max conditions of a if statement
+               conditions = 0;
+               traverseWithParents(node.test, function(node){
+                  if(node.type === 'LogicalExpression'){
+                     conditions++;
+                  }
+               }); 
+               if(conditions > maxConditions){
+                  maxConditions = conditions;
+               }
+            }
+            // console.log(maxConditions);
+            builder.MaxConditions = maxConditions+1;
+            
+            if(node.type === 'ForStatement'){
+               nesting = 1;
+               traverseWithParents(node.body, function(node){
+                  if(node.type === 'ForStatement'){
+                     nesting++;
+                  }
+               }); 
+               if(nesting > maxNesting){
+                  maxNesting = nesting;
+               }
+               
+            } 
+            builder.MaxNestingDepth = maxNesting;
+         });
+         
+         fileBuilders[filePath].builders.push(builder);
 		}
 
 	});
