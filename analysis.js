@@ -8,7 +8,7 @@ var fileBuilders = {};
 function main()
 {
 	
-   glob( '/home/ubuntu/checkbox.io/server-side/site/**/*.js', function( err, files ) {
+   glob('/home/ubuntu/checkbox.io/server-side/site/**/*.js',{"ignore":['**/node_modules/**']} ,function( err, files ) {
       console.log(files);     
       files.forEach(function(file,index){
          fileBuilders[file] = {};
@@ -51,7 +51,6 @@ function ComplexityBuilder()
             .format(this.FunctionName, this.StartLine,
                      this.MaxConditions, this.numOfLines, this.MaxNestingDepth)
          );
-         throw new Error("Build fail");	
       }
 	}
 };
