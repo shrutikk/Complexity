@@ -9,7 +9,6 @@ function main()
 {
 	
    glob('/home/ubuntu/checkbox.io/server-side/site/**/*.js',{"ignore":['**/node_modules/**']} ,function( err, files ) {
-      console.log(files);     
       files.forEach(function(file,index){
          fileBuilders[file] = {};
          fileBuilders[file].builders = [];
@@ -42,13 +41,13 @@ function ComplexityBuilder()
          
          console.log(
             (
-               "{0}(): {1}\n" +
+               "FileName:{0}\t{1}(): {2}\n" +
                "============\n" +
-               "MaxConditions: {2}\t" +
-               "Number of Lines: {3}\t"+
-               "Max Nesting: {4} \t Status:Failure\n\n"
+               "MaxConditions: {3}\t" +
+               "Number of Lines: {4}\t"+
+               "Max Nesting: {5} \t Status:Failure\n\n"
             )
-            .format(this.FunctionName, this.StartLine,
+            .format(this.fileName, this.FunctionName, this.StartLine,
                      this.MaxConditions, this.numOfLines, this.MaxNestingDepth)
          );
       }
@@ -117,7 +116,6 @@ function complexity(filePath)
 	var ast = esprima.parse(buf, options);
 
 	var i = 0;
-   console.log(filePath+'******************\n');
 	// Tranverse program with a function visitor.
 	traverseWithParents(ast, function (node) 
 	{
