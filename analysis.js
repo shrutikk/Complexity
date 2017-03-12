@@ -43,9 +43,9 @@ function ComplexityBuilder()
             (
                "FileName:{0}\t{1}(): {2}\n" +
                "============\n" +
-               "MaxConditions: {3}\t" +
+               "Maximum Conditions: {3}\t" +
                "Number of Lines: {4}\t"+
-               "Max Nesting: {5} \t Status:Failure\n\n"
+               "Big Oh Complexity: {5} \t Status:Failure\n\n"
             )
             .format(this.fileName, this.FunctionName, this.StartLine,
                      this.MaxConditions, this.numOfLines, this.MaxNestingDepth)
@@ -134,7 +134,6 @@ function complexity(filePath)
 
          traverseWithParents(node, function(node){
             if(node.type === 'IfStatement'){
-               // find max conditions of a if statement
                conditions = 0;
                traverseWithParents(node.test, function(node){
                   if(node.type === 'LogicalExpression'){
@@ -145,13 +144,12 @@ function complexity(filePath)
                   maxConditions = conditions;
                }
             }
-            // console.log(maxConditions);
             builder.MaxConditions = maxConditions+1;
             
-            if(node.type === 'ForStatement'){
+            if(node.type === 'ForStatement' || node.type === 'WhileStatement'){
                nesting = 1;
                traverseWithParents(node.body, function(node){
-                  if(node.type === 'ForStatement'){
+                  if(node.type === 'ForStatement' || node.type === 'WhileStatement'){
                      nesting++;
                   }
                }); 
