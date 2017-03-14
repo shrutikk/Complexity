@@ -37,11 +37,11 @@ function ComplexityBuilder()
 
 	this.report = function()
 	{
-      if(this.MaxConditions >=8 || this.numOfLines >=100 || this.MaxNestingDepth >=3){
+      if(this.MaxConditions >8 || this.numOfLines >100 || this.MaxNestingDepth >3){
          
          console.log(
             (
-               "FileName:{0}\t{1}(): {2}\n" +
+               "\n\nFileName:{0}\t{1}(): {2}\n" +
                "============\n" +
                "Maximum Conditions: {3}\t" +
                "Number of Lines: {4}\t"+
